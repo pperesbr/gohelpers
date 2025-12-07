@@ -50,6 +50,11 @@ func buildMap(fields []FieldDef) map[string]interface{} {
 	output := make(map[string]interface{})
 
 	for _, f := range fields {
+
+		if f.StaticVal != nil && f.Type == "" {
+			f.Type = TypeStatic
+		}
+
 		switch f.Type {
 
 		case TypeUUID:
@@ -96,6 +101,10 @@ func buildMap(fields []FieldDef) map[string]interface{} {
 				list[i] = buildMap(f.Children)
 			}
 			output[f.Name] = list
+		default:
+			if f.FakeQuery != "" {
+				output[f.Name] = gofakeit.Generate(f.FakeQuery)
+			}
 		}
 	}
 	return output
