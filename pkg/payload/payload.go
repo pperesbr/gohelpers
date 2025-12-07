@@ -1,7 +1,9 @@
 package payload
 
 import (
+	"bytes"
 	"encoding/json"
+	"io"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/google/uuid"
@@ -34,6 +36,14 @@ type FieldDef struct {
 func Generate(fields []FieldDef) ([]byte, error) {
 	data := buildMap(fields)
 	return json.MarshalIndent(data, "", "  ")
+}
+
+func GenerateReader(fields []FieldDef) (io.Reader, error) {
+	data, err := Generate(fields)
+	if err != nil {
+		return nil, err
+	}
+	return bytes.NewBuffer(data), nil
 }
 
 func buildMap(fields []FieldDef) map[string]interface{} {
